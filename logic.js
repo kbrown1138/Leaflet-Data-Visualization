@@ -2,6 +2,7 @@
 var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 var queryUrl2 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
+// Enlarge circle markers
 function circleSize(magnitude) {
     return magnitude * 4;
 };
@@ -12,8 +13,10 @@ d3.json(queryUrl, function(data) {
   createFeatures(data.features);
 });
 
+// Define createFeatures function
 function createFeatures(earthquakeData) {
-
+    
+    // Create circle markers
     function pointToLayer(dataPoint, LatLng) {
         return L.circleMarker(LatLng, { radius: circleSize(dataPoint.properties.mag) });
     }
@@ -31,7 +34,7 @@ function createFeatures(earthquakeData) {
    // Define a function we want to run once for each feature in the features array
   // Give each feature a popup describing the place and time of the earthquake
   function onEachFeature(feature, layer) {
-    layer.bindPopup("<h3>" + feature.properties.place +
+    layer.bindPopup("<h3>" + feature.properties.place + "</h3>" + "<h3>" + "Magnitude: " + feature.properties.mag +
       "</h3><hr><p>" + new Date(feature.properties.time) + "</p>");
   }
 
@@ -47,6 +50,7 @@ function createFeatures(earthquakeData) {
   createMap(earthquakes);
 }
 
+// Define fault line layer
 var faultLines = new L.LayerGroup();
 
 d3.json(queryUrl2, function (data) {
@@ -60,6 +64,7 @@ d3.json(queryUrl2, function (data) {
     }).addTo(faultLines);
 })
 
+// Define circleColor function
 function circleColor(magnitude) {
     if (magnitude > 5) {
         return 'red'
@@ -76,9 +81,10 @@ function circleColor(magnitude) {
     }
 };
 
+// Define createMap function
 function createMap(earthquakes) {
 
-  // Define streetmap and darkmap layers
+  // Define streetmap, lightmap, darkmap and satellite layers
   var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
@@ -137,8 +143,10 @@ function createMap(earthquakes) {
     collapsed: false
   }).addTo(myMap);
 
+// Place the legend in the bottom right
 var legend = L.control({ position: 'bottomright' });
-
+    
+    // Create legend
     legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
@@ -155,5 +163,7 @@ var legend = L.control({ position: 'bottomright' });
 
         return div;
     };
+    
+    // Add the legend to the map
     legend.addTo(myMap);
 }
